@@ -104,7 +104,7 @@ function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) 
   browsableMission.missionRepoData = missionRepo;
 
   const stringProps = ['coverImage', 'title', 'webSummary'];
-  const dateProps = ['dueDate']
+  const dateProps = ['dueDate'];
 
   const retVal = parseMetadataProperties<BrowsableMission>(
     browsableMission,

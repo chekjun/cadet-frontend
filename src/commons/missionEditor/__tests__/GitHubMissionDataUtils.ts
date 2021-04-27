@@ -43,7 +43,7 @@ test('parseMetadataProperties correctly discovers properties', () => {
   expect(retVal.reading).toBe('Textbook Pages 1 to 234763');
   expect(retVal.webSummary).toBe('no');
   expect(retVal.sourceVersion).toBe(3);
-  expect(retVal.dueDate).toBe(new Date('December 17, 1995 03:24:00'));
+  expect(retVal.dueDate).toStrictEqual(new Date('December 17, 1995 03:24:00'));
 });
 
 test('getMissionData works properly', async () => {
