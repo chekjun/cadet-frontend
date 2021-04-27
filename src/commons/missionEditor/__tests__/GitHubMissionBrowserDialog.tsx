@@ -37,10 +37,18 @@ test('Selecting close causes resolveDialog to return empty string for owner and 
 test('Selecting open on a mission card causes resolveDialog to return owner and repoName', async () => {
   const octokit = new Mocktokit();
 
-  const mockMissionRepoData = new MissionRepoData('ownerName', 'repoName', 'December 17, 1995 03:24:00');
+  const mockMissionRepoData = new MissionRepoData(
+    'ownerName',
+    'repoName',
+    'December 17, 1995 03:24:00'
+  );
   const mockMissionRepos: MissionRepoData[] = [mockMissionRepoData];
 
-  let returnedResponse = new MissionRepoData('notownerName', 'notrepoName', 'December 18, 1995 03:24:00');
+  let returnedResponse = new MissionRepoData(
+    'notownerName',
+    'notrepoName',
+    'December 18, 1995 03:24:00'
+  );
   function resolveDialog(response: MissionRepoData) {
     returnedResponse = response;
   }
