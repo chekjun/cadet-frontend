@@ -123,19 +123,23 @@ class MocktokitHelper {
 
   static third = [{ name: 'Q1' }, { name: 'Q2' }];
 
-  static fourth = {
+  static fourth = [];
+
+  static fifth = {
     content: Buffer.from('Task A', 'utf8').toString('base64')
   };
 
-  static fifth = {
+  static sixth = {
     content: Buffer.from('Code A', 'utf8').toString('base64')
   };
 
-  static sixth = {
+  static seventh = [];
+
+  static eighth = {
     content: Buffer.from('Task B', 'utf8').toString('base64')
   };
 
-  static seventh = {
+  static ninth = {
     content: Buffer.from('Code B', 'utf8').toString('base64')
   };
 
@@ -146,6 +150,8 @@ class MocktokitHelper {
     MocktokitHelper.fourth,
     MocktokitHelper.fifth,
     MocktokitHelper.sixth,
-    MocktokitHelper.seventh
+    MocktokitHelper.seventh,
+    MocktokitHelper.eighth,
+    MocktokitHelper.ninth
   ];
 }
