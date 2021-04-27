@@ -140,7 +140,7 @@ const MissionEditor: React.FC<MissionEditorProps> = props => {
   const [cachedTaskList, setCachedTaskList] = React.useState<TaskData[]>([]);
   const [taskList, setTaskList] = React.useState<TaskData[]>([]);
   const [currentTaskNumber, setCurrentTaskNumber] = React.useState(0);
-  const [missionRepoData, setMissionRepoData] = React.useState(new MissionRepoData('', ''));
+  const [missionRepoData, setMissionRepoData] = React.useState(new MissionRepoData('', '', ''));
 
   const getTemplateCode = useCallback(
     (questionNumber: number) => {

@@ -45,7 +45,7 @@ export const GitHubMissionBrowserDialog: React.FC<any> = props => {
   );
 
   function handleClose() {
-    props.resolveDialog(new MissionRepoData('', ''));
+    props.resolveDialog(new MissionRepoData('', '', ''));
   }
 };
 
@@ -79,7 +79,7 @@ class BrowsableMission {
   title: string = '';
   coverImage: string = '';
   webSummary: string = '';
-  missionRepoData: MissionRepoData = new MissionRepoData('', '');
+  missionRepoData: MissionRepoData = new MissionRepoData('', '', '');
 }
 
 function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) {

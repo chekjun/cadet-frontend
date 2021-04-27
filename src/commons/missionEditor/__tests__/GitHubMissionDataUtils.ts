@@ -44,7 +44,7 @@ test('parseMetadataProperties correctly discovers properties', () => {
 
 test('getMissionData works properly', async () => {
   const missionData = await GitHubMissionDataUtils.getMissionData(
-    new MissionRepoData('Pain', 'Peko'),
+    new MissionRepoData('Pain', 'Peko', 'Peko'),
     new MocktokitB()
   );
 
