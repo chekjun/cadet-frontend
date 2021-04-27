@@ -216,7 +216,10 @@ const MissionEditor: React.FC<MissionEditorProps> = props => {
     }
 
     setCachedTaskList(
-      taskList.map(taskData => new TaskData(taskData.taskDescription, taskData.starterCode))
+      taskList.map(
+        taskData =>
+          new TaskData(taskData.taskDescription, taskData.starterCode, taskData.starterCode)
+      )
     );
   }, [cachedTaskList, taskList, missionRepoData, getTemplateCode]);
 
@@ -254,7 +257,8 @@ const MissionEditor: React.FC<MissionEditorProps> = props => {
       setTaskList(missionData.tasksData);
       setCachedTaskList(
         missionData.tasksData.map(
-          taskData => new TaskData(taskData.taskDescription, taskData.starterCode)
+          taskData =>
+            new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
         )
       );
       setCurrentTaskNumber(1);

@@ -57,6 +57,21 @@ export async function getTasksData(repoOwner: string, repoName: string, octokit:
       break;
     }
 
+    // Find out if there is already SavedCode for the question
+    const folderContents = await octokit.repos.getContent({
+      owner: repoOwner,
+      repo: repoName,
+      path: questionFolderName
+    });
+
+    if (!Array.isArray(folderContents.data)) {
+      return questions;
+    }
+
+    const hasSavedCode = (folderContents.data as any[]).find(
+      (file: any) => file.name === 'SavedCode.js'
+    );
+
     // If the question exists, get the data
     try {
       const taskDescription = await getContentAsString(
@@ -72,7 +87,16 @@ export async function getTasksData(repoOwner: string, repoName: string, octokit:
         octokit
       );
 
-      const taskData = new TaskData(taskDescription, starterCode);
+      const savedCode = hasSavedCode
+        ? await getContentAsString(
+            repoOwner,
+            repoName,
+            questionFolderName + '/SavedCode.js',
+            octokit
+          )
+        : '';
+
+      const taskData = new TaskData(taskDescription, starterCode, savedCode);
 
       questions.push(taskData);
     } catch (err) {
