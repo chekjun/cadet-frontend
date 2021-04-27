@@ -274,6 +274,8 @@ const MissionEditor: React.FC<MissionEditorProps> = props => {
 
   const loadMission = useCallback(
     (missionData: MissionData) => {
+      console.log(missionData);
+
       selectSourceChapter(missionData.missionMetadata.sourceVersion);
       setMissionRepoData(missionData.missionRepoData);
       setBriefingContent(missionData.missionBriefing);
@@ -285,7 +287,7 @@ const MissionEditor: React.FC<MissionEditorProps> = props => {
         )
       );
       setCurrentTaskNumber(1);
-      props.handleEditorValueChange(missionData.tasksData[0].starterCode);
+      props.handleEditorValueChange(missionData.tasksData[0].savedCode);
     },
     [props]
   );
