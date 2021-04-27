@@ -274,8 +274,6 @@ const MissionEditor: React.FC<MissionEditorProps> = props => {
 
   const loadMission = useCallback(
     (missionData: MissionData) => {
-      console.log(missionData);
-
       selectSourceChapter(missionData.missionMetadata.sourceVersion);
       setMissionRepoData(missionData.missionRepoData);
       setBriefingContent(missionData.missionBriefing);
