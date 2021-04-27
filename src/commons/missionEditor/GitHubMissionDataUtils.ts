@@ -94,7 +94,7 @@ export async function getTasksData(repoOwner: string, repoName: string, octokit:
             questionFolderName + '/SavedCode.js',
             octokit
           )
-        : '';
+        : starterCode;
 
       const taskData = new TaskData(taskDescription, starterCode, savedCode);
 
