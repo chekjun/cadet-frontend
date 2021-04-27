@@ -1,8 +1,8 @@
+import { Octokit } from '@octokit/rest';
 import moment from 'moment';
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
 import Achievement from 'src/pages/achievement/AchievementContainer';
-import { store } from 'src/pages/createStore';
 
 import Academy from '../../pages/academy/AcademyContainer';
 import Contributors from '../../pages/contributors/Contributors';
@@ -14,6 +14,7 @@ import MissionControlContainer from '../../pages/missionControl/MissionControlCo
 import NotFound from '../../pages/notFound/NotFound';
 import Playground from '../../pages/playground/PlaygroundContainer';
 import SourcecastContainer from '../../pages/sourcecast/SourcecastContainer';
+import { GitHubMissions } from '../githubAssessments/GitHubMissions';
 import NavigationBar from '../navigationBar/NavigationBar';
 import Constants from '../utils/Constants';
 import { parseQuery } from '../utils/QueryHelper';
@@ -31,6 +32,7 @@ export type StateProps = {
   role?: Role;
   title: string;
   name?: string;
+  githubOctokitInstance: Octokit | undefined;
 };
 
 const Application: React.FC<ApplicationProps> = props => {
@@ -124,7 +126,7 @@ const Application: React.FC<ApplicationProps> = props => {
         role={props.role}
         name={props.name}
         title={props.title}
-        githubOctokitInstance={store.getState().session.githubOctokitInstance}
+        githubOctokitInstance={props.githubOctokitInstance}
       />
       <div className="Application__main">
         {disabled && (
@@ -145,7 +147,8 @@ const Application: React.FC<ApplicationProps> = props => {
             <Route path="/playground" component={Playground} />
             <Route path="/contributors" component={Contributors} />
             <Route path="/sourcecast/:sourcecastId?" component={SourcecastContainer} />
-            <Route path="/githubassessments/" component={GitHubAssessmentsContainer} />
+            <Route path="/githubassessments/editor" component={GitHubAssessmentsContainer} />
+            <Route path="/githubassessments/missions" render={(props) => (<GitHubMissions {...props} />)} />
             <Route path="/callback/github" component={GitHubCallback} />
             {fullPaths}
             <Route

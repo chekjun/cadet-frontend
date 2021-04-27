@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import ContentDisplay from 'src/commons/ContentDisplay';
 import Markdown from 'src/commons/Markdown';
 
 import defaultCoverImage from '../../assets/default_cover_image.jpg';
@@ -16,34 +15,47 @@ import MissionRepoData from './MissionRepoData';
 export const GitHubMissions: React.FC<any> = props => {
   const isMobileBreakpoint = useMediaQuery({ maxWidth: Constants.mobileBreakpoint });
 
+  const [missionRepos, setMissionRepos] = useState<MissionRepoData[]>([]);
   const [browsableMissions, setBrowsableMissions] = useState<BrowsableMission[]>([]);
 
   useEffect(() => {
-    convertMissionReposToBrowsableMissions(props.missionRepos, props.octokit, setBrowsableMissions);
-  }, [props.missionRepos, props.githubOctokitInstance]);
+    if (props.githubOctokitInstance !== undefined) {
+      const octokit = props.githubOctokitInstance;
+      console.log(octokit);
+      getMissionRepoData(octokit.repos.listForAuthenticatedUser);
+    }
+    console.log('no');
+  }, [props.githubOctokitInstance]);
 
-  const display = (
-    <>
+  useEffect(() => {
+    convertMissionReposToBrowsableMissions(missionRepos, props.githubOctokitInstance, setBrowsableMissions);
+  }, [missionRepos, props.githubOctokitInstance]);
+
+  // Finally, render the ContentDisplay.
+  return (
+    <div>
       <div className={classNames('githubDialogHeader', Classes.DIALOG_HEADER)}>
         <h3>Select a Mission</h3>
       </div>
       <div className={Classes.DIALOG_BODY}>
         <div className="missionBrowserContent">
           {browsableMissions.map(missionRepo =>
-            convertMissionToCard(missionRepo, isMobileBreakpoint, props.resolveDialog)
+            convertMissionToCard(missionRepo, isMobileBreakpoint)
           )}
         </div>
       </div>
-    </>
-  );
-
-  // Finally, render the ContentDisplay.
-  return (
-    <div className="Assessment Academy">
-      <ContentDisplay display={display} loadContentDispatch={props.missionRepos} />
     </div>
   );
+
+  async function getMissionRepoData(getRepos: any) {
+    const repos = (await getRepos({ per_page: 100 })).data;
+    setMissionRepos(repos
+      .filter((repo: any) => repo.name.startsWith('SA-'))
+      .map((repo: any) => new MissionRepoData(repo.owner.login, repo.name)) as MissionRepoData[]);
+  }
 };
+
+
 
 async function convertMissionReposToBrowsableMissions(
   missionRepos: MissionRepoData[],
@@ -98,7 +110,6 @@ function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) 
 function convertMissionToCard(
   missionRepo: BrowsableMission,
   isMobileBreakpoint: boolean,
-  resolveDialog: (response: MissionRepoData) => void
 ) {
   const ratio = isMobileBreakpoint ? 5 : 3;
   const ownerSlashName =
@@ -134,7 +145,7 @@ function convertMissionToCard(
               // intentional: each listing renders its own version of onClick
               // tslint:disable-next-line:jsx-no-lambda
               onClick={() => {
-                resolveDialog(missionRepo.missionRepoData);
+                loadintoeditor();
               }}
             >
               <span className="custom-hidden-xxxs">Open</span>
@@ -144,4 +155,8 @@ function convertMissionToCard(
       </div>
     </Card>
   );
+}
+
+const loadintoeditor = () => {
+
 }

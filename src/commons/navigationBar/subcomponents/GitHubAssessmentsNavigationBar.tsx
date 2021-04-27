@@ -3,10 +3,8 @@ import { IconNames } from '@blueprintjs/icons';
 import { Octokit } from '@octokit/rest';
 import classNames from 'classnames';
 import * as React from 'react';
-import { NavLink, Route } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { ControlBarGitHubLoginButton } from 'src/commons/controlBar/ControlBarGitHubLoginButton';
-import { GitHubMissions } from 'src/commons/githubAssessments/GitHubMissions';
-import { store } from 'src/pages/createStore';
 
 type OwnProps = {
   githubOctokitInstance: Octokit | undefined;
@@ -24,13 +22,12 @@ const GitHubAssessmentsNavigationBar: React.FunctionComponent<OwnProps> = props 
       >
         <Icon icon={IconNames.FLAME} />
         <div className="navbar-button-text hidden-xs hidden-sm">Missions</div>
-        <Route path="/githubassessments/missions" render={(props) => (<GitHubMissions {...props} />)} />
       </NavLink>
     </NavbarGroup>
-
+  
     <NavbarGroup align={Alignment.RIGHT}>
       <ControlBarGitHubLoginButton
-        loggedInAs={store.getState().session.githubOctokitInstance}
+        loggedInAs={props.githubOctokitInstance}
         key="github"
         onClickLogIn={props.handleGitHubLogIn}
         onClickLogOut={props.handleGitHubLogOut}
