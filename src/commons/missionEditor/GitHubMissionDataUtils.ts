@@ -126,11 +126,13 @@ function convertMetadataStringToMissionMetadata(metadataString: string) {
   const missionMetadata = new MissionMetadata();
   const stringPropsToExtract = ['coverImage', 'kind', 'number', 'title', 'reading', 'webSummary'];
   const numPropsToExtract = ['sourceVersion'];
+  const datePropsToExtract = ['dueDate'];
 
   const retVal = parseMetadataProperties<MissionMetadata>(
     missionMetadata,
     stringPropsToExtract,
     numPropsToExtract,
+    datePropsToExtract,
     metadataString
   );
 
@@ -141,6 +143,7 @@ export function parseMetadataProperties<R>(
   propertyContainer: R,
   stringProps: string[],
   numProps: string[],
+  dateProps: string[],
   metadataString: string
 ) {
   const lines = metadataString.replace(/\r/g, '').split(/\n/);
@@ -159,6 +162,15 @@ export function parseMetadataProperties<R>(
       const propName = numProps[i];
       if (line.startsWith(propName)) {
         propertyContainer[propName] = parseInt(line.substr(propName.length + 1), 10);
+        return;
+      }
+    }
+
+    for (let i = 0; i < numProps.length; i++) {
+      const propName = dateProps[i];
+
+      if (line.startsWith(propName)) {
+        propertyContainer[propName] = new Date(line.substr(propName.length + 1));
         return;
       }
     }

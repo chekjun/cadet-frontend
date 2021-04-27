@@ -16,6 +16,7 @@ test('parseMetadataProperties correctly discovers properties', () => {
   const missionMetadata = new MissionMetadata();
   const stringPropsToExtract = ['coverImage', 'kind', 'number', 'title', 'reading', 'webSummary'];
   const numPropsToExtract = ['sourceVersion'];
+  const datePropsToExtract = ['dueDate'];
 
   const metadataString =
     'coverImage=www.somelink.com\n' +
@@ -23,6 +24,7 @@ test('parseMetadataProperties correctly discovers properties', () => {
     'number=M3\n' +
     'title=Dummy Mission\n' +
     'reading=Textbook Pages 1 to 234763\n' +
+    'dueDate=December 17, 1995 03:24:00\n' +
     'webSummary=no\n' +
     'sourceVersion=3';
 
@@ -30,6 +32,7 @@ test('parseMetadataProperties correctly discovers properties', () => {
     missionMetadata,
     stringPropsToExtract,
     numPropsToExtract,
+    datePropsToExtract,
     metadataString
   );
 
@@ -40,6 +43,7 @@ test('parseMetadataProperties correctly discovers properties', () => {
   expect(retVal.reading).toBe('Textbook Pages 1 to 234763');
   expect(retVal.webSummary).toBe('no');
   expect(retVal.sourceVersion).toBe(3);
+  expect(retVal.dueDate).toBe(new Date('December 17, 1995 03:24:00'));
 });
 
 test('getMissionData works properly', async () => {

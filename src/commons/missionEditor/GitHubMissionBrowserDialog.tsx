@@ -1,4 +1,15 @@
-import { Button, Card, Classes, Dialog, Elevation, H4, H6, Intent, Text } from '@blueprintjs/core';
+import {
+  Button,
+  Card,
+  Classes,
+  Dialog,
+  Elevation,
+  H4,
+  H6,
+  Icon,
+  Intent,
+  Text
+} from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import { Octokit } from '@octokit/rest';
 import classNames from 'classnames';
@@ -84,6 +95,7 @@ class BrowsableMission {
   coverImage: string = '';
   webSummary: string = '';
   missionRepoData: MissionRepoData = new MissionRepoData('', '', '');
+  dueDate: Date = new Date(8640000000000000);
 }
 
 function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) {
@@ -91,12 +103,14 @@ function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) 
 
   browsableMission.missionRepoData = missionRepo;
 
-  const propertiesToExtract = ['coverImage', 'title', 'webSummary'];
+  const stringProps = ['coverImage', 'title', 'webSummary'];
+  const dateProps = ['dueDate']
 
   const retVal = parseMetadataProperties<BrowsableMission>(
     browsableMission,
-    propertiesToExtract,
+    stringProps,
     [],
+    dateProps,
     metadata
   );
 
@@ -111,6 +125,9 @@ function convertMissionToCard(
   const ratio = isMobileBreakpoint ? 5 : 3;
   const ownerSlashName =
     missionRepo.missionRepoData.repoOwner + '/' + missionRepo.missionRepoData.repoName;
+  const dueDate = missionRepo.dueDate.toDateString();
+  const isOverdue = new Date() > missionRepo.dueDate;
+  const buttonText = isOverdue ? 'Review Answers' : 'Open';
 
   return (
     <Card key={ownerSlashName} className="row listing" elevation={Elevation.ONE}>
@@ -135,6 +152,11 @@ function convertMissionToCard(
         </div>
 
         <div className="listing-footer">
+          <Text className="listing-due-date">
+            <Icon className="listing-due-icon" iconSize={12} icon={IconNames.TIME} />
+            {'Due: ' + dueDate}
+          </Text>
+
           <div className="listing-button">
             <Button
               icon={IconNames.PLAY}
@@ -145,7 +167,7 @@ function convertMissionToCard(
                 resolveDialog(missionRepo.missionRepoData);
               }}
             >
-              <span className="custom-hidden-xxxs">Open</span>
+              <span className="custom-hidden-xxxs">{buttonText}</span>
             </Button>
           </div>
         </div>
