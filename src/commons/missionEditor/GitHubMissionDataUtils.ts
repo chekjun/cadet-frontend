@@ -64,10 +64,6 @@ export async function getTasksData(repoOwner: string, repoName: string, octokit:
       path: questionFolderName
     });
 
-    if (!Array.isArray(folderContents.data)) {
-      return questions;
-    }
-
     const hasSavedCode = (folderContents.data as any[]).find(
       (file: any) => file.name === 'SavedCode.js'
     );
