@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { NavLink, Route } from 'react-router-dom';
 import { ControlBarGitHubLoginButton } from 'src/commons/controlBar/ControlBarGitHubLoginButton';
-import { GitHubMissionBrowserDialog } from 'src/commons/githubAssessments/GitHubMissionBrowserDialog';
+import { GitHubMissions } from 'src/commons/githubAssessments/GitHubMissions';
 import { store } from 'src/pages/createStore';
 
 type OwnProps = {
@@ -24,7 +24,7 @@ const GitHubAssessmentsNavigationBar: React.FunctionComponent<OwnProps> = props 
       >
         <Icon icon={IconNames.FLAME} />
         <div className="navbar-button-text hidden-xs hidden-sm">Missions</div>
-        <Route path="/githubassessments/missions" component={GitHubMissionBrowserDialog}></Route>
+        <Route path="/githubassessments/missions" render={(props) => (<GitHubMissions {...props} />)} />
       </NavLink>
     </NavbarGroup>
 
