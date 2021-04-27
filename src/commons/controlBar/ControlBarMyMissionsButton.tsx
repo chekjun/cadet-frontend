@@ -38,7 +38,6 @@ function createOnClickHandler(props: ControlBarMyMissionsButtonProps) {
     }
 
     const allMissionRepos = await getMissionRepoData(octokit.repos.listForAuthenticatedUser);
-    console.log(allMissionRepos);
 
     const chosenRepo = await promisifyDialog<any, MissionRepoData>(
       GitHubMissionBrowserDialog,
@@ -74,8 +73,6 @@ function createOnClickHandler(props: ControlBarMyMissionsButtonProps) {
 
 async function getMissionRepoData(getRepos: any) {
   const repos = (await getRepos({ per_page: 100 })).data;
-
-  console.log(repos);
 
   return repos
     .filter((repo: any) => repo.name.startsWith('SA-'))

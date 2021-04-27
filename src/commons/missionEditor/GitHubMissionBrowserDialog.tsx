@@ -60,6 +60,10 @@ async function convertMissionReposToBrowsableMissions(
     browsableMissions.push(await convertRepoToBrowsableMission(missionRepos[i], octokit));
   }
 
+  browsableMissions.sort((a, b) => {
+    return a.missionRepoData.dateOfCreation < b.missionRepoData.dateOfCreation ? 1 : -1;
+  });
+
   setBrowsableMissions(browsableMissions);
 }
 
