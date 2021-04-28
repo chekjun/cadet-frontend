@@ -7,6 +7,7 @@ import { decompressFromEncodedURIComponent } from 'lz-string';
 import React, { useCallback } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { RouteComponentProps } from 'react-router';
+import { getMissionData } from 'src/commons/githubAssessments/GitHubMissionDataUtils';
 
 import { InterpreterOutput, sourceLanguages } from '../../commons/application/ApplicationTypes';
 import { ExternalLibraryName } from '../../commons/application/types/ExternalTypes';
@@ -14,7 +15,6 @@ import { ControlBarAutorunButtons } from '../../commons/controlBar/ControlBarAut
 import { ControlBarChapterSelect } from '../../commons/controlBar/ControlBarChapterSelect';
 import { ControlBarClearButton } from '../../commons/controlBar/ControlBarClearButton';
 import { ControlBarEvalButton } from '../../commons/controlBar/ControlBarEvalButton';
-import { ControlBarMyMissionsButton } from '../../commons/controlBar/ControlBarMyMissionsButton';
 import { ControlBarNextTaskButton } from '../../commons/controlBar/ControlBarNextTaskButton';
 import { ControlBarPreviousTaskButton } from '../../commons/controlBar/ControlBarPreviousTaskButton';
 import { ControlBarResetButton } from '../../commons/controlBar/ControlBarResetButton';
@@ -105,6 +105,7 @@ export type StateProps = {
   stepLimit: number;
   externalLibraryName: ExternalLibraryName;
   usingSubst: boolean;
+  githubAssessment: MissionRepoData | undefined;
   githubOctokitInstance: Octokit | undefined;
 };
 
@@ -141,7 +142,7 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
   const [cachedTaskList, setCachedTaskList] = React.useState<TaskData[]>([]);
   const [taskList, setTaskList] = React.useState<TaskData[]>([]);
   const [currentTaskNumber, setCurrentTaskNumber] = React.useState(0);
-  const [missionRepoData, setMissionRepoData] = React.useState(new MissionRepoData('', '', ''));
+  const [missionRepoData, setMissionRepoData] = React.useState(props.githubAssessment);
 
   const getEditedCode = useCallback(
     (questionNumber: number) => {
@@ -158,7 +159,7 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
   );
 
   const onClickSave = useCallback(async () => {
-    if (missionRepoData.repoName === '') {
+    if (missionRepoData === undefined) {
       showWarningMessage("You can't save without a mission open!", 2000);
       return;
     }
@@ -271,8 +272,15 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
     props.handleEditorValueChange(getEditedCode(newTaskNumber));
   }, [currentTaskNumber, setCurrentTaskNumber, props, getEditedCode]);
 
-  const loadMission = useCallback(
-    (missionData: MissionData) => {
+
+
+
+  React.useEffect(() => {
+    if (missionRepoData !== undefined) {
+      showMission(missionRepoData);
+    }
+
+    async function loadMissionData(missionData: MissionData) {
       selectSourceChapter(missionData.missionMetadata.sourceVersion);
       setMissionRepoData(missionData.missionRepoData);
       setBriefingContent(missionData.missionBriefing);
@@ -285,9 +293,19 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
       );
       setCurrentTaskNumber(1);
       props.handleEditorValueChange(missionData.tasksData[0].savedCode);
-    },
-    [props]
-  );
+    }
+
+    async function showMission(missionRepoData: MissionRepoData) {
+      if (props.githubOctokitInstance === undefined) {
+        console.log('where my octokit');
+        return;
+      }
+      console.log("waow");
+      await loadMissionData(await getMissionData(missionRepoData, props.githubOctokitInstance));
+      console.log("woaw");
+    }
+  }, [missionRepoData, props]);
+
 
   /**
    * Handles toggling of relevant SideContentTabs when exiting the mobile breakpoint
@@ -475,10 +493,6 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
     return <ControlBarResetButton key="reset" onClick={onClickReset} />;
   }, [onClickReset]);
 
-  const myMissionsButton = React.useMemo(() => {
-    return <ControlBarMyMissionsButton key="my_missions" loadMission={loadMission} />;
-  }, [loadMission]);
-
   const tabs = React.useMemo(() => {
     const tabs: SideContentTab[] = [];
 
@@ -609,7 +623,7 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
 
   const workspaceProps: WorkspaceProps = {
     controlBarProps: {
-      editorButtons: [autorunButtons, saveButton, resetButton, chapterSelect, myMissionsButton],
+      editorButtons: [autorunButtons, saveButton, resetButton, chapterSelect],
       flowButtons: [prevTaskButton, taskView, nextTaskButton]
     },
     editorProps: editorProps,
@@ -636,7 +650,7 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
     replProps: replProps,
     mobileSideContentProps: {
       mobileControlBarProps: {
-        editorButtons: [autorunButtons, chapterSelect, myMissionsButton],
+        editorButtons: [autorunButtons, chapterSelect],
         flowButtons: [prevTaskButton, taskView, nextTaskButton]
       },
       defaultSelectedTabId: selectedTab,

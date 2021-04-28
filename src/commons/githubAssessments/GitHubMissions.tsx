@@ -4,13 +4,15 @@ import { Octokit } from '@octokit/rest';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { NavLink } from 'react-router-dom';
 import Markdown from 'src/commons/Markdown';
 import { getGitHubOctokitInstance } from 'src/features/github/GitHubUtils';
+import { store } from 'src/pages/createStore';
 
 import defaultCoverImage from '../../assets/default_cover_image.jpg';
 import ContentDisplay from '../ContentDisplay';
+import { actions } from '../utils/ActionsHelper';
 import Constants from '../utils/Constants';
-import { showSimpleConfirmDialog } from '../utils/DialogHelper';
 import { getContentAsString, parseMetadataProperties } from './GitHubMissionDataUtils';
 import MissionRepoData from './MissionRepoData';
 
@@ -149,17 +151,20 @@ function convertMissionToCard(missionRepo: BrowsableMission, isMobileBreakpoint:
 
           <div className="listing-footer">
             <div className="listing-button">
+            <NavLink
+              to={`/githubassessments/editor`}>
               <Button
                 icon={IconNames.PLAY}
                 minimal={true}
                 // intentional: each listing renders its own version of onClick
                 // tslint:disable-next-line:jsx-no-lambda
                 onClick={() => {
-                  loadIntoEditor();
+                  loadIntoEditor(missionRepo.missionRepoData);
                 }}
               >
                 <span className="custom-hidden-xxxs">Open</span>
               </Button>
+            </NavLink>
             </div>
           </div>
         </div>
@@ -168,14 +173,6 @@ function convertMissionToCard(missionRepo: BrowsableMission, isMobileBreakpoint:
   );
 }
 
-const loadIntoEditor = () => {
-  const isLoad = showSimpleConfirmDialog({
-    icon: IconNames.WARNING_SIGN,
-    title: 'Open Mission?',
-    contents: <p>Open this mission in editor?</p>,
-    positiveLabel: 'Confirm',
-    negativeLabel: 'Cancel'
-  });
-  if (isLoad) {
-  }
-};
+async function loadIntoEditor (missionRepoData: MissionRepoData) {
+  store.dispatch(actions.setGitHubAssessment(missionRepoData));
+}

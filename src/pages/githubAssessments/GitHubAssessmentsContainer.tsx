@@ -70,6 +70,7 @@ const mapStateToProps: MapStateToProps<StateProps, {}, OverallState> = state => 
   sharedbConnected: state.workspaces.githubAssessments.sharedbConnected,
   externalLibraryName: state.workspaces.githubAssessments.externalLibrary,
   usingSubst: state.playground.usingSubst,
+  githubAssessment: state.session.githubAssessment,
   githubOctokitInstance: state.session.githubOctokitInstance
 });
 
