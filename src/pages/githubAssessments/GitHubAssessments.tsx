@@ -42,7 +42,9 @@ import { stringParamToInt } from '../../commons/utils/ParamParseHelper';
 import { parseQuery } from '../../commons/utils/QueryHelper';
 import Workspace, { WorkspaceProps } from '../../commons/workspace/Workspace';
 import {
+  checkIfFileCanBeSavedAndGetSaveType,
   getGitHubOctokitInstance,
+  performCreatingSave,
   performOverwritingSave
 } from '../../features/github/GitHubUtils';
 
@@ -139,18 +141,18 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
   const [cachedTaskList, setCachedTaskList] = React.useState<TaskData[]>([]);
   const [taskList, setTaskList] = React.useState<TaskData[]>([]);
   const [currentTaskNumber, setCurrentTaskNumber] = React.useState(0);
-  const [missionRepoData, setMissionRepoData] = React.useState(new MissionRepoData('', ''));
+  const [missionRepoData, setMissionRepoData] = React.useState(new MissionRepoData('', '', ''));
 
-  const getTemplateCode = useCallback(
+  const getEditedCode = useCallback(
     (questionNumber: number) => {
-      return taskList[questionNumber - 1].starterCode;
+      return taskList[questionNumber - 1].savedCode;
     },
     [taskList]
   );
 
-  const editTemplateCode = useCallback(
+  const editCode = useCallback(
     (questionNumber: number, newValue: string) => {
-      taskList[questionNumber - 1].starterCode = newValue;
+      taskList[questionNumber - 1].savedCode = newValue;
     },
     [taskList]
   );
@@ -172,10 +174,10 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
     const changedFiles: string[] = [];
 
     for (let i = 0; i < taskList.length; i++) {
-      if (taskList[i].starterCode !== cachedTaskList[i].starterCode) {
+      if (taskList[i].savedCode !== cachedTaskList[i].savedCode) {
         const taskNumber = i + 1;
         changedTasks.push(taskNumber);
-        changedFiles.push('Q' + taskNumber + '/StarterCode.js');
+        changedFiles.push('Q' + taskNumber + '/SavedCode.js');
       }
     }
 
@@ -202,22 +204,46 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
       const changedTask = changedTasks[i];
       const changedFile = changedFiles[i];
 
-      performOverwritingSave(
+      const { saveType } = await checkIfFileCanBeSavedAndGetSaveType(
         octokit,
         missionRepoData.repoOwner,
         missionRepoData.repoName,
-        changedFile,
-        githubName,
-        githubEmail,
-        commitMessage,
-        getTemplateCode(changedTask)
+        changedFile
       );
+
+      if (saveType === 'Overwrite') {
+        performOverwritingSave(
+          octokit,
+          missionRepoData.repoOwner,
+          missionRepoData.repoName,
+          changedFile,
+          githubName,
+          githubEmail,
+          commitMessage,
+          getEditedCode(changedTask)
+        );
+      }
+
+      if (saveType === 'Create') {
+        performCreatingSave(
+          octokit,
+          missionRepoData.repoOwner,
+          missionRepoData.repoName,
+          changedFile,
+          githubName,
+          githubEmail,
+          commitMessage,
+          getEditedCode(changedTask)
+        );
+      }
     }
 
     setCachedTaskList(
-      taskList.map(taskData => new TaskData(taskData.taskDescription, taskData.starterCode))
+      taskList.map(
+        taskData => new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
+      )
     );
-  }, [cachedTaskList, taskList, missionRepoData, getTemplateCode]);
+  }, [cachedTaskList, taskList, missionRepoData, getEditedCode]);
 
   const onClickReset = useCallback(async () => {
     const confirmReset = await showSimpleConfirmDialog({
@@ -229,21 +255,21 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
     if (confirmReset) {
       const originalCode = cachedTaskList[currentTaskNumber - 1].starterCode;
       props.handleEditorValueChange(originalCode);
-      editTemplateCode(currentTaskNumber, originalCode);
+      editCode(currentTaskNumber, originalCode);
     }
-  }, [cachedTaskList, currentTaskNumber, editTemplateCode, props]);
+  }, [cachedTaskList, currentTaskNumber, editCode, props]);
 
   const onClickPrevious = useCallback(() => {
     const newTaskNumber = currentTaskNumber - 1;
     setCurrentTaskNumber(newTaskNumber);
-    props.handleEditorValueChange(getTemplateCode(newTaskNumber));
-  }, [currentTaskNumber, setCurrentTaskNumber, props, getTemplateCode]);
+    props.handleEditorValueChange(getEditedCode(newTaskNumber));
+  }, [currentTaskNumber, setCurrentTaskNumber, props, getEditedCode]);
 
   const onClickNext = useCallback(() => {
     const newTaskNumber = currentTaskNumber + 1;
     setCurrentTaskNumber(newTaskNumber);
-    props.handleEditorValueChange(getTemplateCode(newTaskNumber));
-  }, [currentTaskNumber, setCurrentTaskNumber, props, getTemplateCode]);
+    props.handleEditorValueChange(getEditedCode(newTaskNumber));
+  }, [currentTaskNumber, setCurrentTaskNumber, props, getEditedCode]);
 
   const loadMission = useCallback(
     (missionData: MissionData) => {
@@ -253,11 +279,12 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
       setTaskList(missionData.tasksData);
       setCachedTaskList(
         missionData.tasksData.map(
-          taskData => new TaskData(taskData.taskDescription, taskData.starterCode)
+          taskData =>
+            new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
         )
       );
       setCurrentTaskNumber(1);
-      props.handleEditorValueChange(missionData.tasksData[0].starterCode);
+      props.handleEditorValueChange(missionData.tasksData[0].savedCode);
     },
     [props]
   );
@@ -317,9 +344,9 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
   const onEditorValueChange = React.useCallback(
     val => {
       propsRef.current.handleEditorValueChange(val);
-      editTemplateCode(currentTaskNumber, val);
+      editCode(currentTaskNumber, val);
     },
-    [currentTaskNumber, editTemplateCode]
+    [currentTaskNumber, editCode]
   );
 
   const onChangeTabs = React.useCallback(

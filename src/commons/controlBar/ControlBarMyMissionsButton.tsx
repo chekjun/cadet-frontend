@@ -73,7 +73,10 @@ function createOnClickHandler(props: ControlBarMyMissionsButtonProps) {
 
 async function getMissionRepoData(getRepos: any) {
   const repos = (await getRepos({ per_page: 100 })).data;
+
   return repos
     .filter((repo: any) => repo.name.startsWith('SA-'))
-    .map((repo: any) => new MissionRepoData(repo.owner.login, repo.name)) as MissionRepoData[];
+    .map(
+      (repo: any) => new MissionRepoData(repo.owner.login, repo.name, repo.created_at)
+    ) as MissionRepoData[];
 }

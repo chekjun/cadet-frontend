@@ -32,16 +32,16 @@ export const GitHubMissions: React.FC<any> = props => {
 
   let display: JSX.Element;
   if (octokit === undefined) {
-    display = <NonIdealState description="Please sign in to GitHub." icon={IconNames.WARNING_SIGN} />;
+    display = (
+      <NonIdealState description="Please sign in to GitHub." icon={IconNames.WARNING_SIGN} />
+    );
   } else if (missionRepos.length === 0) {
     display = <NonIdealState title="There are no assessments." icon={IconNames.FLAME} />;
   } else {
-    const cards = browsableMissions.map(element => convertMissionToCard(element, isMobileBreakpoint))
-    display = (
-      <>
-        {cards}
-      </>
+    const cards = browsableMissions.map(element =>
+      convertMissionToCard(element, isMobileBreakpoint)
     );
+    display = <>{cards}</>;
   }
 
   // Finally, render the ContentDisplay.
@@ -57,9 +57,13 @@ export const GitHubMissions: React.FC<any> = props => {
     if (octokit === undefined) return;
     const results = await octokit.repos.listForAuthenticatedUser({ per_page: 100 });
     const repos = results.data;
-    setMissionRepos(repos
-      .filter((repo: any) => repo.name.startsWith('SA-'))
-      .map((repo: any) => new MissionRepoData(repo.owner.login, repo.name)) as MissionRepoData[]);
+    setMissionRepos(
+      repos
+        .filter((repo: any) => repo.name.startsWith('SA-'))
+        .map(
+          (repo: any) => new MissionRepoData(repo.owner.login, repo.name, repo.created_at)
+        ) as MissionRepoData[]
+    );
   }
 
   async function convertMissionReposToBrowsableMissions(
@@ -68,11 +72,11 @@ export const GitHubMissions: React.FC<any> = props => {
   ) {
     if (octokit === undefined) return;
     const browsableMissions: BrowsableMission[] = [];
-  
+
     for (let i = 0; i < missionRepos.length; i++) {
       browsableMissions.push(await convertRepoToBrowsableMission(missionRepos[i], octokit));
     }
-  
+
     setBrowsableMissions(browsableMissions);
   }
 };
@@ -93,7 +97,7 @@ class BrowsableMission {
   title: string = '';
   coverImage: string = '';
   webSummary: string = '';
-  missionRepoData: MissionRepoData = new MissionRepoData('', '');
+  missionRepoData: MissionRepoData = new MissionRepoData('', '', '');
 }
 
 function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) {
@@ -101,22 +105,21 @@ function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) 
 
   browsableMission.missionRepoData = missionRepo;
 
-  const propertiesToExtract = ['coverImage', 'title', 'webSummary'];
+  const stringProps = ['coverImage', 'title', 'webSummary'];
+  const dateProps = ['dueDate'];
 
   const retVal = parseMetadataProperties<BrowsableMission>(
     browsableMission,
-    propertiesToExtract,
+    stringProps,
     [],
+    dateProps,
     metadata
   );
 
   return retVal;
 }
 
-function convertMissionToCard(
-  missionRepo: BrowsableMission,
-  isMobileBreakpoint: boolean,
-) {
+function convertMissionToCard(missionRepo: BrowsableMission, isMobileBreakpoint: boolean) {
   const ratio = isMobileBreakpoint ? 5 : 3;
   const ownerSlashName =
     missionRepo.missionRepoData.repoOwner + '/' + missionRepo.missionRepoData.repoName;
@@ -161,7 +164,7 @@ function convertMissionToCard(
           </div>
         </div>
       </Card>
-    </div>    
+    </div>
   );
 }
 
@@ -169,14 +172,10 @@ const loadIntoEditor = () => {
   const isLoad = showSimpleConfirmDialog({
     icon: IconNames.WARNING_SIGN,
     title: 'Open Mission?',
-    contents: (
-      <p>
-        Open this mission in editor?
-      </p>),
+    contents: <p>Open this mission in editor?</p>,
     positiveLabel: 'Confirm',
     negativeLabel: 'Cancel'
   });
   if (isLoad) {
-    
   }
-}
+};

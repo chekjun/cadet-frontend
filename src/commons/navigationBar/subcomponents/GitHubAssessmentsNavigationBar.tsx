@@ -24,7 +24,7 @@ const GitHubAssessmentsNavigationBar: React.FunctionComponent<OwnProps> = props 
         <div className="navbar-button-text hidden-xs hidden-sm">Missions</div>
       </NavLink>
     </NavbarGroup>
-  
+
     <NavbarGroup align={Alignment.RIGHT}>
       <ControlBarGitHubLoginButton
         loggedInAs={props.githubOctokitInstance}
