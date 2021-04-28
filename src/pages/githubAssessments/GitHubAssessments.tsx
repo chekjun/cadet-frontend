@@ -272,40 +272,29 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
     props.handleEditorValueChange(getEditedCode(newTaskNumber));
   }, [currentTaskNumber, setCurrentTaskNumber, props, getEditedCode]);
 
-
-
-
-  React.useEffect(() => {
-    if (missionRepoData !== undefined) {
-      showMission(missionRepoData);
+  async function loadMission(missionRepoData: MissionRepoData) {
+    if (props.githubOctokitInstance === undefined) {
+      console.log('where my octokit');
+      return;
     }
+    const missionData: MissionData = await getMissionData(missionRepoData, props.githubOctokitInstance);
+    selectSourceChapter(missionData.missionMetadata.sourceVersion);
+    setMissionRepoData(missionData.missionRepoData);
+    setBriefingContent(missionData.missionBriefing);
+    setTaskList(missionData.tasksData);
+    setCachedTaskList(
+      missionData.tasksData.map(
+        taskData =>
+          new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
+      )
+    );
+    setCurrentTaskNumber(1);
+    props.handleEditorValueChange(missionData.tasksData[0].savedCode);
+  }
 
-    async function loadMissionData(missionData: MissionData) {
-      selectSourceChapter(missionData.missionMetadata.sourceVersion);
-      setMissionRepoData(missionData.missionRepoData);
-      setBriefingContent(missionData.missionBriefing);
-      setTaskList(missionData.tasksData);
-      setCachedTaskList(
-        missionData.tasksData.map(
-          taskData =>
-            new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
-        )
-      );
-      setCurrentTaskNumber(1);
-      props.handleEditorValueChange(missionData.tasksData[0].savedCode);
-    }
-
-    async function showMission(missionRepoData: MissionRepoData) {
-      if (props.githubOctokitInstance === undefined) {
-        console.log('where my octokit');
-        return;
-      }
-      console.log("waow");
-      await loadMissionData(await getMissionData(missionRepoData, props.githubOctokitInstance));
-      console.log("woaw");
-    }
-  }, [missionRepoData, props]);
-
+  if (missionRepoData !== undefined) {
+    loadMission(missionRepoData);
+  }
 
   /**
    * Handles toggling of relevant SideContentTabs when exiting the mobile breakpoint
