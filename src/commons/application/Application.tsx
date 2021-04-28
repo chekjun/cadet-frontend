@@ -148,7 +148,7 @@ const Application: React.FC<ApplicationProps> = props => {
             <Route path="/contributors" component={Contributors} />
             <Route path="/sourcecast/:sourcecastId?" component={SourcecastContainer} />
             <Route path="/githubassessments/editor" component={GitHubAssessmentsContainer} />
-            <Route path="/githubassessments/missions" render={GitHubMissions} />
+            <Route path="/githubassessments/missions" component={GitHubMissions} />
             <Route path="/callback/github" component={GitHubCallback} />
             {fullPaths}
             <Route
