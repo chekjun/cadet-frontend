@@ -6,6 +6,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import Markdown from 'src/commons/Markdown';
+import { getGitHubOctokitInstance } from 'src/features/github/GitHubUtils';
 
 import defaultCoverImage from '../../assets/default_cover_image.jpg';
 import Constants from '../utils/Constants';
@@ -15,17 +16,17 @@ import MissionRepoData from './MissionRepoData';
 export const GitHubMissions: React.FC<any> = props => {
   const isMobileBreakpoint = useMediaQuery({ maxWidth: Constants.mobileBreakpoint });
 
+  const [octokit, setOctokit] = useState(getGitHubOctokitInstance());
+
   const [missionRepos, setMissionRepos] = useState<MissionRepoData[]>([]);
   const [browsableMissions, setBrowsableMissions] = useState<BrowsableMission[]>([]);
 
   useEffect(() => {
-    if (props.githubOctokitInstance !== undefined) {
-      const octokit = props.githubOctokitInstance;
-      console.log(octokit);
+    if (octokit !== undefined) {
       getMissionRepoData(octokit.repos.listForAuthenticatedUser);
+      setOctokit(octokit);
     }
-    console.log('no');
-  }, [props.githubOctokitInstance]);
+  }, [octokit]);
 
   useEffect(() => {
     convertMissionReposToBrowsableMissions(missionRepos, props.githubOctokitInstance, setBrowsableMissions);
