@@ -1,3 +1,4 @@
+import { Octokit } from '@octokit/rest';
 import moment from 'moment';
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
@@ -6,13 +7,14 @@ import Achievement from 'src/pages/achievement/AchievementContainer';
 import Academy from '../../pages/academy/AcademyContainer';
 import Contributors from '../../pages/contributors/Contributors';
 import Disabled from '../../pages/disabled/Disabled';
+import GitHubAssessmentsContainer from '../../pages/githubAssessments/GitHubAssessmentsContainer';
 import GitHubCallback from '../../pages/githubCallback/GitHubCallback';
 import Login from '../../pages/login/LoginContainer';
 import MissionControlContainer from '../../pages/missionControl/MissionControlContainer';
-import MissionEditorContainer from '../../pages/missionEditor/MissionEditorContainer';
 import NotFound from '../../pages/notFound/NotFound';
 import Playground from '../../pages/playground/PlaygroundContainer';
 import SourcecastContainer from '../../pages/sourcecast/SourcecastContainer';
+import { GitHubMissions } from '../githubAssessments/GitHubMissions';
 import NavigationBar from '../navigationBar/NavigationBar';
 import Constants from '../utils/Constants';
 import { parseQuery } from '../utils/QueryHelper';
@@ -22,12 +24,15 @@ export type ApplicationProps = DispatchProps & StateProps & RouteComponentProps<
 
 export type DispatchProps = {
   handleLogOut: () => void;
+  handleGitHubLogIn: () => void;
+  handleGitHubLogOut: () => void;
 };
 
 export type StateProps = {
   role?: Role;
   title: string;
   name?: string;
+  githubOctokitInstance: Octokit | undefined;
 };
 
 const Application: React.FC<ApplicationProps> = props => {
@@ -116,9 +121,12 @@ const Application: React.FC<ApplicationProps> = props => {
     <div className="Application">
       <NavigationBar
         handleLogOut={props.handleLogOut}
+        handleGitHubLogIn={props.handleGitHubLogIn}
+        handleGitHubLogOut={props.handleGitHubLogOut}
         role={props.role}
         name={props.name}
         title={props.title}
+        githubOctokitInstance={props.githubOctokitInstance}
       />
       <div className="Application__main">
         {disabled && (
@@ -139,7 +147,8 @@ const Application: React.FC<ApplicationProps> = props => {
             <Route path="/playground" component={Playground} />
             <Route path="/contributors" component={Contributors} />
             <Route path="/sourcecast/:sourcecastId?" component={SourcecastContainer} />
-            <Route path="/missionEditor/" component={MissionEditorContainer} />
+            <Route path="/githubassessments/editor" component={GitHubAssessmentsContainer} />
+            <Route path="/githubassessments/missions" component={GitHubMissions} />
             <Route path="/callback/github" component={GitHubCallback} />
             {fullPaths}
             <Route
