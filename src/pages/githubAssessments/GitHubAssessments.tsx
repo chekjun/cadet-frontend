@@ -153,7 +153,7 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
 
   const editCode = useCallback(
     (questionNumber: number, newValue: string) => {
-      if (taskList.length === 0) {
+      if (questionNumber >= taskList.length) {
         return;
       }
 
