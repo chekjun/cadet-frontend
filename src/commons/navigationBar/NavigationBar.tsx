@@ -12,7 +12,6 @@ import {
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import { Tooltip2 } from '@blueprintjs/popover2';
-import { Octokit } from '@octokit/rest';
 import classNames from 'classnames';
 import * as React from 'react';
 import { useMediaQuery } from 'react-responsive';
@@ -37,7 +36,6 @@ type StateProps = {
   role?: Role;
   title: string;
   name?: string;
-  githubOctokitInstance: Octokit | undefined;
 };
 
 const NavigationBar: React.FC<NavigationBarProps> = props => {
@@ -117,7 +115,7 @@ const NavigationBar: React.FC<NavigationBarProps> = props => {
       <NavLink
         activeClassName={Classes.ACTIVE}
         className={classNames('NavigationBar__link', Classes.BUTTON, Classes.MINIMAL)}
-        to="/githubassessments/editor"
+        to="/githubassessments/missions"
       >
         <Icon icon={IconNames.BRIEFCASE} />
         <div className="navbar-button-text">GitHub Assessments</div>

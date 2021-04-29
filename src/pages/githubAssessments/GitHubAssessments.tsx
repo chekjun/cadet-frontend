@@ -43,12 +43,12 @@ import { parseQuery } from '../../commons/utils/QueryHelper';
 import Workspace, { WorkspaceProps } from '../../commons/workspace/Workspace';
 import {
   checkIfFileCanBeSavedAndGetSaveType,
-  getGitHubOctokitInstance,
   performCreatingSave,
   performOverwritingSave
 } from '../../features/github/GitHubUtils';
+import { store } from '../createStore';
 
-export type MissionEditorProps = DispatchProps & StateProps & RouteComponentProps<{}>;
+export type GitHubAssessmentsProps = DispatchProps & StateProps & RouteComponentProps<{}>;
 
 export type DispatchProps = {
   handleActiveTabChange: (activeTab: SideContentType) => void;
@@ -105,11 +105,9 @@ export type StateProps = {
   stepLimit: number;
   externalLibraryName: ExternalLibraryName;
   usingSubst: boolean;
-  githubAssessment: MissionRepoData | undefined;
-  githubOctokitInstance: Octokit | undefined;
 };
 
-function handleHash(hash: string, props: MissionEditorProps) {
+function handleHash(hash: string, props: GitHubAssessmentsProps) {
   const qs = parseQuery(hash);
 
   const programLz = qs.lz ?? qs.prgrm;
@@ -128,7 +126,7 @@ function handleHash(hash: string, props: MissionEditorProps) {
   }
 }
 
-const GitHubAssessments: React.FC<MissionEditorProps> = props => {
+const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
   const isMobileBreakpoint = useMediaQuery({ maxWidth: Constants.mobileBreakpoint });
   const [selectedTab, setSelectedTab] = React.useState(SideContentType.missionTask);
 
@@ -142,7 +140,29 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
   const [cachedTaskList, setCachedTaskList] = React.useState<TaskData[]>([]);
   const [taskList, setTaskList] = React.useState<TaskData[]>([]);
   const [currentTaskNumber, setCurrentTaskNumber] = React.useState(0);
-  const [missionRepoData, setMissionRepoData] = React.useState(props.githubAssessment);
+
+  const missionRepoData = props.location.state as MissionRepoData;
+  const octokit = store.getState().session.githubOctokitInstance as Octokit;
+
+  loadMission();
+
+  async function loadMission() {
+    if (octokit === undefined) return;
+    const missionData: MissionData = await getMissionData(
+      missionRepoData,
+      octokit
+    );
+    selectSourceChapter(missionData.missionMetadata.sourceVersion);
+    setBriefingContent(missionData.missionBriefing);
+    setTaskList(missionData.tasksData);
+    setCachedTaskList(
+      missionData.tasksData.map(
+        taskData => new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
+      )
+    );
+    setCurrentTaskNumber(1);
+    props.handleEditorValueChange(missionData.tasksData[0].savedCode);
+  }
 
   const getEditedCode = useCallback(
     (questionNumber: number) => {
@@ -167,8 +187,6 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
       showWarningMessage("You can't save without a mission open!", 2000);
       return;
     }
-
-    const octokit = getGitHubOctokitInstance() as Octokit;
 
     if (octokit === undefined) {
       showWarningMessage('Please sign in with GitHub!', 2000);
@@ -248,7 +266,7 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
         taskData => new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
       )
     );
-  }, [cachedTaskList, taskList, missionRepoData, getEditedCode]);
+  }, [cachedTaskList, getEditedCode, missionRepoData, octokit, taskList]);
 
   const onClickReset = useCallback(async () => {
     const confirmReset = await showSimpleConfirmDialog({
@@ -275,32 +293,6 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
     setCurrentTaskNumber(newTaskNumber);
     props.handleEditorValueChange(getEditedCode(newTaskNumber));
   }, [currentTaskNumber, setCurrentTaskNumber, props, getEditedCode]);
-
-  async function loadMission(missionRepoData: MissionRepoData) {
-    if (props.githubOctokitInstance === undefined) {
-      console.log('where my octokit');
-      return;
-    }
-    const missionData: MissionData = await getMissionData(
-      missionRepoData,
-      props.githubOctokitInstance
-    );
-    selectSourceChapter(missionData.missionMetadata.sourceVersion);
-    setMissionRepoData(missionData.missionRepoData);
-    setBriefingContent(missionData.missionBriefing);
-    setTaskList(missionData.tasksData);
-    setCachedTaskList(
-      missionData.tasksData.map(
-        taskData => new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
-      )
-    );
-    setCurrentTaskNumber(1);
-    props.handleEditorValueChange(missionData.tasksData[0].savedCode);
-  }
-
-  if (missionRepoData !== undefined) {
-    loadMission(missionRepoData);
-  }
 
   /**
    * Handles toggling of relevant SideContentTabs when exiting the mobile breakpoint

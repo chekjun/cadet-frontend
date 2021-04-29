@@ -4,17 +4,18 @@ import { Octokit } from '@octokit/rest';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { NavLink } from 'react-router-dom';
 import Markdown from 'src/commons/Markdown';
+import { history } from 'src/commons/utils/HistoryHelper';
 import { getGitHubOctokitInstance } from 'src/features/github/GitHubUtils';
-import { store } from 'src/pages/createStore';
 
 import defaultCoverImage from '../../assets/default_cover_image.jpg';
-import ContentDisplay from '../ContentDisplay';
-import { actions } from '../utils/ActionsHelper';
-import Constants from '../utils/Constants';
-import { getContentAsString, parseMetadataProperties } from './GitHubMissionDataUtils';
-import MissionRepoData from './MissionRepoData';
+import ContentDisplay from '../../commons/ContentDisplay';
+import {
+  getContentAsString,
+  parseMetadataProperties
+} from '../../commons/githubAssessments/GitHubMissionDataUtils';
+import MissionRepoData from '../../commons/githubAssessments/MissionRepoData';
+import Constants from '../../commons/utils/Constants';
 
 export const GitHubMissions: React.FC<any> = props => {
   const isMobileBreakpoint = useMediaQuery({ maxWidth: Constants.mobileBreakpoint });
@@ -41,7 +42,7 @@ export const GitHubMissions: React.FC<any> = props => {
     display = <NonIdealState title="There are no assessments." icon={IconNames.FLAME} />;
   } else {
     const cards = browsableMissions.map(element =>
-      convertMissionToCard(element, isMobileBreakpoint)
+      convertMissionToCard(element, octokit, isMobileBreakpoint)
     );
     display = <>{cards}</>;
   }
@@ -121,10 +122,12 @@ function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) 
   return retVal;
 }
 
-function convertMissionToCard(missionRepo: BrowsableMission, isMobileBreakpoint: boolean) {
+function convertMissionToCard(missionRepo: BrowsableMission, octokit: Octokit, isMobileBreakpoint: boolean) {
   const ratio = isMobileBreakpoint ? 5 : 3;
   const ownerSlashName =
     missionRepo.missionRepoData.repoOwner + '/' + missionRepo.missionRepoData.repoName;
+
+  const data = missionRepo.missionRepoData;
 
   return (
     <div key={ownerSlashName}>
@@ -151,27 +154,21 @@ function convertMissionToCard(missionRepo: BrowsableMission, isMobileBreakpoint:
 
           <div className="listing-footer">
             <div className="listing-button">
-              <NavLink to={`/githubassessments/editor`}>
-                <Button
-                  icon={IconNames.PLAY}
-                  minimal={true}
-                  // intentional: each listing renders its own version of onClick
-                  // tslint:disable-next-line:jsx-no-lambda
-                  onClick={() => {
-                    loadIntoEditor(missionRepo.missionRepoData);
-                  }}
-                >
-                  <span className="custom-hidden-xxxs">Open</span>
-                </Button>
-              </NavLink>
+              <Button
+                icon={IconNames.PLAY}
+                minimal={true}
+                onClick={loadIntoEditor}
+              >
+                <span className="custom-hidden-xxxs">Open</span>
+              </Button>
             </div>
           </div>
         </div>
       </Card>
     </div>
   );
-}
 
-async function loadIntoEditor(missionRepoData: MissionRepoData) {
-  store.dispatch(actions.setGitHubAssessment(missionRepoData));
+  function loadIntoEditor() {
+    history.push(`/githubassessments/editor`, data);
+  }
 }

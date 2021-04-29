@@ -1,13 +1,12 @@
 import { Alignment, Classes, Icon, Navbar, NavbarGroup } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import { Octokit } from '@octokit/rest';
 import classNames from 'classnames';
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ControlBarGitHubLoginButton } from 'src/commons/controlBar/ControlBarGitHubLoginButton';
+import { store } from 'src/pages/createStore';
 
 type OwnProps = {
-  githubOctokitInstance: Octokit | undefined;
   handleGitHubLogIn: any;
   handleGitHubLogOut: any;
 };
@@ -27,7 +26,7 @@ const GitHubAssessmentsNavigationBar: React.FunctionComponent<OwnProps> = props 
 
     <NavbarGroup align={Alignment.RIGHT}>
       <ControlBarGitHubLoginButton
-        loggedInAs={props.githubOctokitInstance}
+        loggedInAs={store.getState().session.githubOctokitInstance}
         key="github"
         onClickLogIn={props.handleGitHubLogIn}
         onClickLogOut={props.handleGitHubLogOut}

@@ -1,4 +1,3 @@
-import { Octokit } from '@octokit/rest';
 import moment from 'moment';
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
@@ -8,13 +7,13 @@ import Academy from '../../pages/academy/AcademyContainer';
 import Contributors from '../../pages/contributors/Contributors';
 import Disabled from '../../pages/disabled/Disabled';
 import GitHubAssessmentsContainer from '../../pages/githubAssessments/GitHubAssessmentsContainer';
+import { GitHubMissions } from '../../pages/githubAssessments/GitHubMissions';
 import GitHubCallback from '../../pages/githubCallback/GitHubCallback';
 import Login from '../../pages/login/LoginContainer';
 import MissionControlContainer from '../../pages/missionControl/MissionControlContainer';
 import NotFound from '../../pages/notFound/NotFound';
 import Playground from '../../pages/playground/PlaygroundContainer';
 import SourcecastContainer from '../../pages/sourcecast/SourcecastContainer';
-import { GitHubMissions } from '../githubAssessments/GitHubMissions';
 import NavigationBar from '../navigationBar/NavigationBar';
 import Constants from '../utils/Constants';
 import { parseQuery } from '../utils/QueryHelper';
@@ -32,7 +31,6 @@ export type StateProps = {
   role?: Role;
   title: string;
   name?: string;
-  githubOctokitInstance: Octokit | undefined;
 };
 
 const Application: React.FC<ApplicationProps> = props => {
@@ -126,7 +124,6 @@ const Application: React.FC<ApplicationProps> = props => {
         role={props.role}
         name={props.name}
         title={props.title}
-        githubOctokitInstance={props.githubOctokitInstance}
       />
       <div className="Application__main">
         {disabled && (
