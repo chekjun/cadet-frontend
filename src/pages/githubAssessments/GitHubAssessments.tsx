@@ -352,7 +352,7 @@ const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
       propsRef.current.handleEditorValueChange(val);
       editCode(currentTaskNumber, val);
     },
-    [currentTaskNumber, editCode, handleEditorValueChange]
+    [currentTaskNumber, editCode]
   );
 
   const onChangeTabs = React.useCallback(
