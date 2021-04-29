@@ -122,7 +122,11 @@ function createBrowsableMission(missionRepo: MissionRepoData, metadata: string) 
   return retVal;
 }
 
-function convertMissionToCard(missionRepo: BrowsableMission, octokit: Octokit, isMobileBreakpoint: boolean) {
+function convertMissionToCard(
+  missionRepo: BrowsableMission,
+  octokit: Octokit,
+  isMobileBreakpoint: boolean
+) {
   const ratio = isMobileBreakpoint ? 5 : 3;
   const ownerSlashName =
     missionRepo.missionRepoData.repoOwner + '/' + missionRepo.missionRepoData.repoName;
@@ -154,11 +158,7 @@ function convertMissionToCard(missionRepo: BrowsableMission, octokit: Octokit, i
 
           <div className="listing-footer">
             <div className="listing-button">
-              <Button
-                icon={IconNames.PLAY}
-                minimal={true}
-                onClick={loadIntoEditor}
-              >
+              <Button icon={IconNames.PLAY} minimal={true} onClick={loadIntoEditor}>
                 <span className="custom-hidden-xxxs">Open</span>
               </Button>
             </div>

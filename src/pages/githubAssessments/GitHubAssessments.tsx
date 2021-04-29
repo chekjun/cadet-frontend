@@ -4,7 +4,7 @@ import { Octokit } from '@octokit/rest';
 import classNames from 'classnames';
 import { Variant } from 'js-slang/dist/types';
 import { decompressFromEncodedURIComponent } from 'lz-string';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { RouteComponentProps } from 'react-router';
 import { getMissionData } from 'src/commons/githubAssessments/GitHubMissionDataUtils';
@@ -141,17 +141,14 @@ const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
   const [taskList, setTaskList] = React.useState<TaskData[]>([]);
   const [currentTaskNumber, setCurrentTaskNumber] = React.useState(0);
 
+  const handleEditorValueChange = props.handleEditorValueChange;
+
   const missionRepoData = props.location.state as MissionRepoData;
   const octokit = store.getState().session.githubOctokitInstance as Octokit;
 
-  loadMission();
-
-  async function loadMission() {
+  const loadMission = useCallback(async () => {
     if (octokit === undefined) return;
-    const missionData: MissionData = await getMissionData(
-      missionRepoData,
-      octokit
-    );
+    const missionData: MissionData = await getMissionData(missionRepoData, octokit);
     selectSourceChapter(missionData.missionMetadata.sourceVersion);
     setBriefingContent(missionData.missionBriefing);
     setTaskList(missionData.tasksData);
@@ -161,8 +158,12 @@ const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
       )
     );
     setCurrentTaskNumber(1);
-    props.handleEditorValueChange(missionData.tasksData[0].savedCode);
-  }
+    handleEditorValueChange(missionData.tasksData[0].savedCode);
+  }, [missionRepoData, octokit, handleEditorValueChange]);
+
+  useEffect(() => {
+    loadMission();
+  }, [loadMission]);
 
   const getEditedCode = useCallback(
     (questionNumber: number) => {
@@ -277,22 +278,22 @@ const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
     });
     if (confirmReset) {
       const originalCode = cachedTaskList[currentTaskNumber - 1].starterCode;
-      props.handleEditorValueChange(originalCode);
+      handleEditorValueChange(originalCode);
       editCode(currentTaskNumber, originalCode);
     }
-  }, [cachedTaskList, currentTaskNumber, editCode, props]);
+  }, [cachedTaskList, currentTaskNumber, editCode, handleEditorValueChange]);
 
   const onClickPrevious = useCallback(() => {
     const newTaskNumber = currentTaskNumber - 1;
     setCurrentTaskNumber(newTaskNumber);
-    props.handleEditorValueChange(getEditedCode(newTaskNumber));
-  }, [currentTaskNumber, setCurrentTaskNumber, props, getEditedCode]);
+    handleEditorValueChange(getEditedCode(newTaskNumber));
+  }, [currentTaskNumber, setCurrentTaskNumber, getEditedCode, handleEditorValueChange]);
 
   const onClickNext = useCallback(() => {
     const newTaskNumber = currentTaskNumber + 1;
     setCurrentTaskNumber(newTaskNumber);
-    props.handleEditorValueChange(getEditedCode(newTaskNumber));
-  }, [currentTaskNumber, setCurrentTaskNumber, props, getEditedCode]);
+    handleEditorValueChange(getEditedCode(newTaskNumber));
+  }, [currentTaskNumber, setCurrentTaskNumber, getEditedCode, handleEditorValueChange]);
 
   /**
    * Handles toggling of relevant SideContentTabs when exiting the mobile breakpoint
@@ -351,7 +352,7 @@ const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
       propsRef.current.handleEditorValueChange(val);
       editCode(currentTaskNumber, val);
     },
-    [currentTaskNumber, editCode]
+    [currentTaskNumber, editCode, handleEditorValueChange]
   );
 
   const onChangeTabs = React.useCallback(
