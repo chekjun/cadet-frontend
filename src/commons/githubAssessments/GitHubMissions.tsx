@@ -151,20 +151,19 @@ function convertMissionToCard(missionRepo: BrowsableMission, isMobileBreakpoint:
 
           <div className="listing-footer">
             <div className="listing-button">
-            <NavLink
-              to={`/githubassessments/editor`}>
-              <Button
-                icon={IconNames.PLAY}
-                minimal={true}
-                // intentional: each listing renders its own version of onClick
-                // tslint:disable-next-line:jsx-no-lambda
-                onClick={() => {
-                  loadIntoEditor(missionRepo.missionRepoData);
-                }}
-              >
-                <span className="custom-hidden-xxxs">Open</span>
-              </Button>
-            </NavLink>
+              <NavLink to={`/githubassessments/editor`}>
+                <Button
+                  icon={IconNames.PLAY}
+                  minimal={true}
+                  // intentional: each listing renders its own version of onClick
+                  // tslint:disable-next-line:jsx-no-lambda
+                  onClick={() => {
+                    loadIntoEditor(missionRepo.missionRepoData);
+                  }}
+                >
+                  <span className="custom-hidden-xxxs">Open</span>
+                </Button>
+              </NavLink>
             </div>
           </div>
         </div>
@@ -173,6 +172,6 @@ function convertMissionToCard(missionRepo: BrowsableMission, isMobileBreakpoint:
   );
 }
 
-async function loadIntoEditor (missionRepoData: MissionRepoData) {
+async function loadIntoEditor(missionRepoData: MissionRepoData) {
   store.dispatch(actions.setGitHubAssessment(missionRepoData));
 }

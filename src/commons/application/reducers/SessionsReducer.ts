@@ -34,7 +34,7 @@ export const SessionsReducer: Reducer<SessionState> = (
       return {
         ...state,
         githubAssessment: action.payload
-      }
+      };
     case SET_GITHUB_OCTOKIT_INSTANCE:
       return {
         ...state,
