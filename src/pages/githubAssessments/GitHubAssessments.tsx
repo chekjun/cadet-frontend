@@ -153,6 +153,10 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
 
   const editCode = useCallback(
     (questionNumber: number, newValue: string) => {
+      if (questionNumber >= taskList.length) {
+        return;
+      }
+
       taskList[questionNumber - 1].savedCode = newValue;
     },
     [taskList]
@@ -277,15 +281,17 @@ const GitHubAssessments: React.FC<MissionEditorProps> = props => {
       console.log('where my octokit');
       return;
     }
-    const missionData: MissionData = await getMissionData(missionRepoData, props.githubOctokitInstance);
+    const missionData: MissionData = await getMissionData(
+      missionRepoData,
+      props.githubOctokitInstance
+    );
     selectSourceChapter(missionData.missionMetadata.sourceVersion);
     setMissionRepoData(missionData.missionRepoData);
     setBriefingContent(missionData.missionBriefing);
     setTaskList(missionData.tasksData);
     setCachedTaskList(
       missionData.tasksData.map(
-        taskData =>
-          new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
+        taskData => new TaskData(taskData.taskDescription, taskData.starterCode, taskData.savedCode)
       )
     );
     setCurrentTaskNumber(1);
