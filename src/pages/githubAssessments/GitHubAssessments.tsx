@@ -174,7 +174,7 @@ const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
 
   const editCode = useCallback(
     (questionNumber: number, newValue: string) => {
-      if (questionNumber >= taskList.length) {
+      if (questionNumber > taskList.length) {
         return;
       }
 
