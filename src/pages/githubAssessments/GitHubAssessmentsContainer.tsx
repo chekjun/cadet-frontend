@@ -69,7 +69,7 @@ const mapStateToProps: MapStateToProps<StateProps, {}, OverallState> = state => 
   sourceVariant: state.workspaces.githubAssessments.context.variant,
   sharedbConnected: state.workspaces.githubAssessments.sharedbConnected,
   externalLibraryName: state.workspaces.githubAssessments.externalLibrary,
-  usingSubst: state.playground.usingSubst,
+  usingSubst: state.playground.usingSubst
 });
 
 const location: WorkspaceLocation = 'githubAssessments';
