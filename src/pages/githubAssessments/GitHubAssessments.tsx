@@ -236,7 +236,7 @@ const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
       );
 
       if (saveType === 'Overwrite') {
-        performOverwritingSave(
+        await performOverwritingSave(
           octokit,
           missionRepoData.repoOwner,
           missionRepoData.repoName,
@@ -249,7 +249,7 @@ const GitHubAssessments: React.FC<GitHubAssessmentsProps> = props => {
       }
 
       if (saveType === 'Create') {
-        performCreatingSave(
+        await performCreatingSave(
           octokit,
           missionRepoData.repoOwner,
           missionRepoData.repoName,
