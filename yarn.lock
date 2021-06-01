@@ -1200,12 +1200,12 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blueprintjs/core@^3.44.2":
-  version "3.44.2"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-3.44.2.tgz#6b6502a7d26128ccf795b79a0c10aa6b9fd863f7"
-  integrity sha512-rxw0KU0Trdnf5HoILyWrEYpfubC1+VyfpbqcD4pG3iA79oGfo1q5x4S16YTeZpVXRm8VK3TBob4RDRXDd+/4PQ==
+"@blueprintjs/core@^3.44.2", "@blueprintjs/core@^3.45.0":
+  version "3.45.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-3.45.0.tgz#3b0a36aba9bcbf7a141f260f042ef1d0b564cdc4"
+  integrity sha512-oLknlh+jdvdat+3JrljKGAmtP7KJRKnUqWJOvcGHmAlE2nUZkwzI1jICd2HMncQrukIqQN5ORZK1tswus6BM+Q==
   dependencies:
-    "@blueprintjs/icons" "^3.26.0"
+    "@blueprintjs/icons" "^3.26.1"
     "@types/dom4" "^2.0.1"
     classnames "^2.2"
     dom4 "^2.1.5"
@@ -1236,12 +1236,20 @@
     classnames "^2.2"
     tslib "~1.13.0"
 
-"@blueprintjs/popover2@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/popover2/-/popover2-0.8.0.tgz#6412cf5eb92766a069c544cb6424a05f7bb3091d"
-  integrity sha512-fN1CBR7GdCGInipdaghq1SCEc9/gvUXx9i18LSiytAd3Chr//E3WgvvyTUDEeYQAoMz54oGoV8ostas2sqSyRw==
+"@blueprintjs/icons@^3.26.1":
+  version "3.26.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/icons/-/icons-3.26.1.tgz#90cef070264c4c0b6ae0302663755abeb991aee5"
+  integrity sha512-qxAnqhzt5WqYuWN+7p3Pk7bOrhj56YXzD8n79Met8+VIQ14IpKnxr7YAYmNB5X/dVweqXpEk6tKyUjnDjBhulw==
   dependencies:
-    "@blueprintjs/core" "^3.44.2"
+    classnames "^2.2"
+    tslib "~1.13.0"
+
+"@blueprintjs/popover2@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/popover2/-/popover2-0.10.0.tgz#64495293d7ecf5d6659c200ec15d905619666a36"
+  integrity sha512-rkbKq4VQ70Lx5bs9o0PgkA3ssWkmF4Bp7zciJfmYiOGLzucMZsT3ZDikfxgETF+Djjs3LJPcgOqbuCgO8BfuKQ==
+  dependencies:
+    "@blueprintjs/core" "^3.45.0"
     "@popperjs/core" "^2.5.4"
     classnames "^2.2"
     dom4 "^2.1.5"

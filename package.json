@@ -31,7 +31,7 @@
     "@blueprintjs/core": "^3.44.2",
     "@blueprintjs/datetime": "^3.23.2",
     "@blueprintjs/icons": "^3.26.0",
-    "@blueprintjs/popover2": "^0.8.0",
+    "@blueprintjs/popover2": "^0.10.0",
     "@blueprintjs/select": "^3.16.2",
     "@octokit/rest": "^18.5.3",
     "@sentry/browser": "^6.3.6",
