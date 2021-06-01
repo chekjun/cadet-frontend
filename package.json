@@ -88,7 +88,7 @@
     "@testing-library/react": "^11.2.6",
     "@types/acorn": "^4.0.5",
     "@types/common-tags": "^1.8.0",
-    "@types/draft-js": "^0.11.2",
+    "@types/draft-js": "^0.11.3",
     "@types/enzyme": "3.10.8",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/estree": "0.0.45",
