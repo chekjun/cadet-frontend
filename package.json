@@ -73,7 +73,7 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-simple-keyboard": "^3.1.42",
-    "react-sortable-hoc": "^1.11.0",
+    "react-sortable-hoc": "^2.0.0",
     "react-syntax-highlighter": "^15.4.3",
     "react-textarea-autosize": "^8.3.3",
     "redux": "^4.1.0",
