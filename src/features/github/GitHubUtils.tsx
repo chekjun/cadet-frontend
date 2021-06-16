@@ -173,20 +173,6 @@ export async function checkIfUserAgreesToPerformOverwritingSave() {
   });
 }
 
-export async function checkIfUserAgreesToPerformCreatingSave() {
-  return await showSimpleConfirmDialog({
-    contents: (
-      <div>
-        <p>Warning: You are creating a new file in the repository.</p>
-        <p>Please click 'Confirm' to continue, or 'Cancel' to go back.</p>
-      </div>
-    ),
-    negativeLabel: 'Cancel',
-    positiveIntent: 'primary',
-    positiveLabel: 'Confirm'
-  });
-}
-
 export async function openFileInEditor(
   octokit: Octokit,
   repoOwner: string,
