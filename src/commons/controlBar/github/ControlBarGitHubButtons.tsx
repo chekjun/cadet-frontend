@@ -5,12 +5,14 @@ import { Octokit } from '@octokit/rest';
 import * as React from 'react';
 import { useMediaQuery } from 'react-responsive';
 
+import { GitHubSaveInfo } from '../../../features/github/GitHubTypes';
 import controlButton from '../../ControlButton';
 import Constants from '../../utils/Constants';
 
 export type ControlBarGitHubButtonsProps = {
   loggedInAs: Octokit;
-  githubSaveInfo: { repoName: string; filePath: string };
+  githubSaveInfo: GitHubSaveInfo;
+  isDirty: boolean;
   onClickOpen?: () => void;
   onClickSave?: () => void;
   onClickSaveAs?: () => void;
@@ -26,7 +28,7 @@ export type ControlBarGitHubButtonsProps = {
  */
 export const ControlBarGitHubButtons: React.FC<ControlBarGitHubButtonsProps> = props => {
   const isMobileBreakpoint = useMediaQuery({ maxWidth: Constants.mobileBreakpoint });
-  
+
   const filePath = props.githubSaveInfo.filePath || '';
   const fileName = (filePath.split('\\').pop() || '').split('/').pop() || '';
 
@@ -36,7 +38,10 @@ export const ControlBarGitHubButtons: React.FC<ControlBarGitHubButtonsProps> = p
   const hasOpenFile = isLoggedIn && hasFilePath;
 
   const mainButtonDisplayText = hasOpenFile ? fileName : 'GitHub';
-  const mainButtonIntent = hasOpenFile ? Intent.PRIMARY : Intent.NONE;
+  let mainButtonIntent: Intent = Intent.NONE;
+  if (hasOpenFile) {
+    mainButtonIntent = props.isDirty ? Intent.WARNING : Intent.PRIMARY;
+  }
 
   const mainButton = controlButton(mainButtonDisplayText, IconNames.GIT_BRANCH, null, {
     intent: mainButtonIntent
